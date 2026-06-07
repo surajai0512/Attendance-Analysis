@@ -37,7 +37,7 @@ def process_data(file_source):
         'Follow-up': ['Follow-up', 'Followup', 'Follow up', 'Coordinator'],
         'Joining Date': ['Joining Date', 'JoiningDate', 'Date of Joining', 'DOJ'],
         'Living Date': ['Living Date', 'LivingDate', 'Date of Leaving', 'DOL'],
-        'Last Attended Sabha': ['Last Attended Sabha', 'LastAttendedSabha', 'Last Attended'],
+        'Last Attended Sabha': ['Last Attended Sabha', 'LastAttendedSabha', 'Last Attended', 'Sabha'],
         'Total Sabha': ['Total Attended Sabha', 'Total Sabha', 'TotalSabha', 'Total Attended'],
         'User Status': ['User Status', 'UserStatus', 'Status']
     }
@@ -71,7 +71,7 @@ def process_data(file_source):
         df['User Status'] = 1  # Default fallback if column is entirely missing
 
     # Clean text values up smoothly
-    for col in ['First Name', 'Middle Name', 'Last Name', 'Category', 'Follow-up', 'Living Date', 'Joining Date', 'Mandal']:
+    for col in ['First Name', 'Middle Name', 'Last Name', 'Category', 'Follow-up', 'Living Date', 'Joining Date', 'Mandal', 'Last Attended Sabha']:
         df[col] = df[col].fillna("Unassigned").astype(str).str.strip()
         df[col] = df[col].replace(['', 'nan', 'None', 'nan nan'], 'Unassigned')
             
@@ -147,7 +147,7 @@ status_selection = st.sidebar.selectbox(
     format_func=lambda x: "All Members" if x == "All Statuses" else status_display_map.get(x, x)
 )
 
-# 2. Dynamic Multi-Select Category Filter (Pulls Yuvak, Ambrish, Karyakarta, Relocated, etc.)
+# 2. Dynamic Multi-Select Category Filter
 try:
     raw_category_options = sorted(list(raw_data['Category'].unique()))
 except:
@@ -159,7 +159,19 @@ selected_categories = st.sidebar.multiselect(
     default=raw_category_options
 )
 
-# Apply Data Filtering Pipeline Sequence
+# 3. Dynamic Multi-Select Sabha Filter (Pulls from Last Attended Sabha)
+try:
+    raw_sabha_options = sorted(list(raw_data['Last Attended Sabha'].unique()))
+except:
+    raw_sabha_options = ['Unassigned']
+
+selected_sabhas = st.sidebar.multiselect(
+    "Select Last Attended Sabha:",
+    options=raw_sabha_options,
+    default=raw_sabha_options
+)
+
+# Apply Data Filtering Pipeline Sequence Sequential Processing
 data = raw_data.copy()
 
 # Filter Parameter A: User Status
@@ -174,6 +186,12 @@ if status_selection != "All Statuses":
 if selected_categories:
     data = data[data['Category'].isin(selected_categories)]
 else:
+    data = pd.DataFrame(columns=raw_data.columns)
+
+# Filter Parameter C: Multi-Select Sabha Match
+if selected_sabhas and not data.empty:
+    data = data[data['Last Attended Sabha'].isin(selected_sabhas)]
+elif not selected_sabhas:
     data = pd.DataFrame(columns=raw_data.columns)
 
 color_map = {
