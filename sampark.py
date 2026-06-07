@@ -159,7 +159,7 @@ selected_categories = st.sidebar.multiselect(
     default=raw_category_options
 )
 
-# 3. Dynamic Multi-Select Sabha Filter (Pulls from Last Attended Sabha)
+# 3. Dynamic Multi-Select Sabha Filter
 try:
     raw_sabha_options = sorted(list(raw_data['Last Attended Sabha'].unique()))
 except:
@@ -606,3 +606,40 @@ if len(joinee_df) > 0:
             st.warning("⚠️ No matching new joinees found for the selected filter combinations.")
 else:
     st.info("No active records found matching entry windows within the last 6 months.")
+
+# -----------------------------------------------------------------------------
+# 8. TECHNICAL RISK CATEGORIZATION FRAMEWORK REFERENCE TABLE
+# -----------------------------------------------------------------------------
+st.markdown("<br><hr>", unsafe_allow_html=True)
+st.header("📋 Status Tier Allocation Framework Reference")
+
+# Generate standard definition metrics matching back-end conditional evaluations
+reference_data = {
+    "Risk Classification Status": [
+        "🟢 Active & Consistent", 
+        "🟡 Slowing Down / At Risk", 
+        "🔴 Recent Dropout", 
+        "🟤 Chronic / Long-term Drop"
+    ],
+    "W4 Criteria Range (Past 4 Weeks)": [
+        "3 to 4 Sabhas attended", 
+        "1 to 2 Sabhas attended", 
+        "Exactly 0 Sabhas attended", 
+        "Exactly 0 Sabhas attended"
+    ],
+    "W12 Criteria Range (Past 12 Weeks)": [
+        "Any historical volume", 
+        "Any historical volume", 
+        "Greater than 0 Sabhas attended", 
+        "Exactly 0 Sabhas attended"
+    ],
+    "Operational Summary Meaning": [
+        "Highly engaged engine base formatting persistent weekly habits.",
+        "Crucial tipping point pool slipping from schedule alignment. Nudge needed.",
+        "Immediate structural breakout risk frame. Has dropped out in the last month.",
+        "Severe disconnect run frame. Completely offline for consecutive months."
+    ]
+}
+
+ref_df = pd.DataFrame(reference_data)
+st.table(ref_df)
