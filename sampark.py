@@ -82,8 +82,10 @@ def process_data(file_source):
         
     df['Full Name'] = df.apply(build_clean_name, axis=1)
     
-    # Standard numerical parsings
+    # Standard numerical parsings with W4 Capping filter constraint rule applied
     df['W4'] = pd.to_numeric(df['W4'], errors='coerce').fillna(0).astype(int)
+    df['W4'] = df['W4'].clip(upper=4) # If W4 value is greater than 4, consider it as 4 for analysis
+    
     df['W12'] = pd.to_numeric(df['W12'], errors='coerce').fillna(0).astype(int)
     
     # Compute active risk tier parameters
@@ -635,7 +637,7 @@ reference_data = {
     ],
     "Operational Summary Meaning": [
         "Highly engaged engine base formatting persistent weekly habits.",
-        "Crucial tipping point pool slipping from schedule alignment. Nudge needed.",
+        "Crucial Tipping Tipping point pool slipping from schedule alignment. Nudge needed.",
         "Immediate structural breakout risk frame. Has dropped out in the last month.",
         "Severe disconnect run frame. Completely offline for consecutive months."
     ]
